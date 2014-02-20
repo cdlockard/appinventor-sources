@@ -27,6 +27,7 @@ import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -563,7 +564,11 @@ public class Form extends Activity
    *
    * @return  true if the screen is vertically scrollable
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+    description = "When checked, there will be a vertical scrollbar on the "
+    + "screen, and the height of the application can exceed the physical "
+    + "height of the device. When unchecked, the application height is "
+    + "constrained to the height of the device.")
   public boolean Scrollable() {
     return scrollable;
   }
@@ -574,7 +579,7 @@ public class Form extends Activity
    * @param scrollable  true if the screen should be vertically scrollable
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "True")
+    defaultValue = "True")
   @SimpleProperty
   public void Scrollable(boolean scrollable) {
     if (this.scrollable == scrollable && frameLayout != null) {
@@ -705,7 +710,7 @@ public class Form extends Activity
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "Information about the screen.  It appears when \"About this Application\" "
-      + "is selected from the system menu. Use it to tell users about your app.  In multiple "
+      + "is selected from the system menu. Use it to inform people about your app.  In multiple "
       + "screen apps, each screen has its own AboutScreen info.")
   public String AboutScreen() {
     return aboutScreen;
@@ -981,8 +986,10 @@ public class Form extends Activity
    * @param vCode the version name of the application
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
-      defaultValue = "1")
-  @SimpleProperty(userVisible = false)
+    defaultValue = "1")
+  @SimpleProperty(userVisible = false,
+    description = "An integer value which must be incremented each time a new Android "
+    +  "Application Package File (APK) is created for the Google Play Store.")
   public void VersionCode(int vCode) {
     // We don't actually need to do anything.
   }
@@ -993,8 +1000,10 @@ public class Form extends Activity
    * @param vName the version name of the application
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-      defaultValue = "1.0")
-  @SimpleProperty(userVisible = false)
+    defaultValue = "1.0")
+  @SimpleProperty(userVisible = false,
+    description = "A string which can be changed to allow Google Play "
+    + "Store users to distinguish between different versions of the App.")
   public void VersionName(String vName) {
     // We don't actually need to do anything.
   }
@@ -1004,7 +1013,8 @@ public class Form extends Activity
    *
    * @return  width property used by the layout
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+    description = "Screen width (x-size).")
   public int Width() {
     return frameLayout.getWidth();
   }
@@ -1014,7 +1024,8 @@ public class Form extends Activity
    *
    * @return  height property used by the layout
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+    description = "Screen height (y-size).")
   public int Height() {
     return frameLayout.getHeight();
   }
@@ -1332,8 +1343,9 @@ public class Form extends Activity
   }
 
   private void showAboutApplicationNotification() {
-    String title = "Invented with App Inventor\n http://appinventor.mit.edu";
-    String message = aboutScreen;
+    String title = "About This App";
+    String tagline = "<p><small><em>Invented with MIT App Inventor<br>appinventor.mit.edu</em></small>";
+    String message = aboutScreen + tagline;
     String buttonText ="Got it";
     Notifier.oneButtonAlert(this, message, title, buttonText);
   }
