@@ -67,6 +67,7 @@ public class ImageSprite extends Sprite {
   private BitmapDrawable rotatedDrawable;
   private double cachedRotationHeading;
   private boolean rotationCached;
+  private boolean [] containedPixelMap;
 
   /**
    * Constructor for ImageSprite.
@@ -142,6 +143,25 @@ public class ImageSprite extends Sprite {
     }
   }
 
+  @Override
+  public boolean containsPoint(double qx, double qy) {
+     // return super.containsPoint(qx, qy);
+    if (super.containsPoint(qx, qy)) {
+      //int x = (int) Math.round(qx - xLeft);
+      //int y = (int) Math.round(qy - yTop);
+      int x = (int) (qx - xLeft);
+      int y = (int) (qy - yTop);
+      int width = unrotatedBitmap.getWidth();
+      return containedPixelMap[(x*width)+y];
+      
+      //int argb = unrotatedBitmap.getPixel(x, y);
+      //return (argb >>> 24) != 0; // Image contains pixel if pixel is not fully transparent.
+    }
+    return false;
+
+  }
+  
+  
   /**
    * Returns the path of the sprite's picture
    *
@@ -177,9 +197,26 @@ public class ImageSprite extends Sprite {
     if (drawable != null) {
       // we'll need the bitmap for the drawable in order to rotate it
       unrotatedBitmap = drawable.getBitmap();
+      if(unrotatedBitmap.hasAlpha()){
+          int bitmapWidth = unrotatedBitmap.getWidth();
+          int bitmapHeight = unrotatedBitmap.getHeight();
+          containedPixelMap = new boolean[bitmapWidth*bitmapHeight];
+          for(int x = 0; x < bitmapWidth; x++){
+              for (int y = 0; y < bitmapHeight; y++){
+                  int argb = unrotatedBitmap.getPixel(x, y);
+                  // assigns true if pixel is opaque, false if transparent        
+                  containedPixelMap[(x*bitmapHeight)+y] = (argb >>> 24) != 0;
+              }
+          }
+      } else{
+          containedPixelMap = null;
+      }
+      
     } else {
       unrotatedBitmap = null;
+      containedPixelMap = null;
     }
+    
     registerChange();
   }
 
