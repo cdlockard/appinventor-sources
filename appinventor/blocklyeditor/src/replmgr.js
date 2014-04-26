@@ -21,6 +21,7 @@ goog.require('goog.events.EventType');
 goog.require('goog.crypt.Hash');
 goog.require('goog.crypt.Sha1');
 goog.require('goog.crypt.Hmac');
+goog.require('goog.crypt.base64');
 
 // Repl State
 // Repl "state" definitions
@@ -174,7 +175,9 @@ Blockly.ReplMgr.pollYail = function() {
         } catch (err) {
         }
     }
-    this.RefreshAssets(this.formName);
+    if (window.parent.ReplState.state == this.rsState.CONNECTED) {
+        this.RefreshAssets(this.formName);
+    }
 };
 
 Blockly.ReplMgr.resetYail = function(code) {
@@ -368,7 +371,13 @@ Blockly.ReplMgr.putYail = (function() {
                 installer = "com.android.vending"; // Temp kludge: Treat old Companions as un-updateable (as they are)
             if (installer != "com.android.vending" && window.parent.COMPANION_UPDATE_URL) {
                 var emulator = (rs.replcode == 'emulator'); // Kludgey way to tell
-                dialog = new Blockly.ReplMgr.Dialog("Companion Version Check", "We need to update " + (emulator?"the Companion App installed in your emulator":"your AI2 Companion App") + " when you click \"OK\" below we will attempt this process. You will be required to approve the update and afterwards you will need to reconnect.", "OK", cancelButton, 0, function(response) {
+
+
+
+
+                dialog = new Blockly.ReplMgr.Dialog("Companion Version Check",
+                                                    'Your Companion App is out of date. Click "OK" to start the update. ' +
+"Watch your " + (emulator?"emulator's":"device's") + ' screen because you will be asked to approve the update.', "OK", cancelButton, 0, function(response) {
                     dialog.hide();
                     if (response != "Not Now") {
                         context.triggerUpdate();
@@ -389,22 +398,96 @@ Blockly.ReplMgr.putYail = (function() {
     return engine.putYail;
 })();
 
+// This function is called when we need to update the Companion, we have
+// an update-able Companion and we have a path to update it from. Otherwise
+// we are never called and the user is given a message that their Companion
+// is out of date.
 Blockly.ReplMgr.triggerUpdate = function() {
     var rs = window.parent.ReplState;
+    var fetchconn = goog.net.XmlHttp();
     var encoder = new goog.Uri.QueryData();
-    encoder.add('url', window.parent.COMPANION_UPDATE_URL);
-    encoder.add('mac', Blockly.ReplMgr.hmac(window.parent.COMPANION_UPDATE_URL));
+    var context = this;
+
+    // Setup Dialog management code
+
+    var dialog = null;
+    var okbuttonshowing = false;
+    var showdialog = function(OkButton, message) {
+        if (dialog) {
+            if (!!OkButton != okbuttonshowing) { // The !! construct turns OkButton into a boolean
+                dialog.hide();
+                dialog = null;
+            }
+        }
+        if (dialog) {
+            dialog.setContent(message);
+        } else {
+            if (OkButton) {
+                dialog = new Blockly.ReplMgr.Dialog("Software Update", message, OkButton, null, 0,
+                                                    function() { dialog.hide();});
+                okbuttonshowing = true;
+            } else {
+                dialog = new Blockly.ReplMgr.Dialog("Software Update", message, null, null, 0, undefined);
+                dialog.display();
+                okbuttonshowing = false;
+            }
+        }
+    };
+    var hidedialog = function() {
+        if (dialog) {
+            dialog.hide();
+        }
+    };
+
+    // End of Dialog management code
+
+    var reset = function() {
+        // Reset companion state
+        rs.state = Blockly.ReplMgr.rsState.IDLE;
+        rs.connection = null;
+        rs.didversioncheck = false;
+        context.resetYail();
+        top.BlocklyPanel_indicateDisconnect();
+        // End reset companion state
+    };
+
+    var fail = function(message) {
+        showdialog("Ok", message);
+        reset();
+    };
+
+    encoder.add('package', 'update.apk');
     var qs = encoder.toString();
-    var conn = goog.net.XmlHttp();
-    conn.open("POST", rs.baseurl + '_update', true);
-    conn.send(qs);
-    // Reset companion state
-    rs.state = Blockly.ReplMgr.rsState.IDLE;
-    rs.connection = null;
-    rs.didversioncheck = false;
-    this.resetYail();
-    window.parent.BlocklyPanel_indicateDisconnect();
-    // End reset companion state
+    fetchconn.open("GET", top.COMPANION_UPDATE_URL, true);
+    fetchconn.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            try {
+                showdialog("Got It", 'The update is now being installed on your device. Watch your device (or emulator) screen and approve the software installation when prompted.<br /><br />IMPORTANT: When the update finishes, choose "DONE" (don\'t click "open"). Then go to App Inventor in your web browser, click the "Connect" menu and choose "Reset Connection".');
+                Blockly.ReplMgr.putAsset("update.apk", goog.crypt.base64.decodeStringToByteArray(this.response),
+                                         function() {
+                                             // Trigger Update Here
+                                             console.log("Update: Downloaded");
+                                             var conn = goog.net.XmlHttp();
+                                             conn.open("POST", rs.baseurl + "_package", true);
+                                             conn.onreadystatechange = function() {
+                                                 if (this.readyState == 4 && this.status == 200) {
+                                                     console.log("Update: _package success");
+                                                 }
+                                             };
+                                             conn.send(qs);
+                                         },
+                                         function() {
+                                             fail("Unable to send update to device/emulator");
+                                         }, true);
+            } catch (err) {     // Most likely a decoding error from goog.crypt.base64...
+                fail("Unable to load update from App Inventor server");
+            }
+        } else if (this.readyState == 4) {
+            fail("Unable to load update from App Inventor server (server not responding)");
+        }
+    };
+    showdialog(false, "We are now downloading update from the App Inventor Server, please standby");
+    fetchconn.send();
 };
 
 Blockly.ReplMgr.acceptableVersion = function(version) {
@@ -492,8 +575,11 @@ Blockly.ReplMgr.setDoitResult = function(block, value) {
 
 Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
     var first = true;
-    var blockly = this;
+    var context = this;
     var counter = 0;            // Used to for counting down
+    var ubercounter = 0;        // Used to keep track of how many times we
+                                // have attempted to start the emulator
+    var ubergiveup = 8;         // How many attempts to start the emulator
     var pc = 0;                 // Use to keep track of state
     var dialog = null;          // We have one dialog for the block
                                 // so we don't create multiple ones
@@ -517,11 +603,37 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
             dialog = null;
         }
     });
+    var timeout = function() {
+        clearInterval(interval);    // Stop polling
+        var giveupButton = "Give Up";
+        var keepgoingButton = "Keep Trying";
+        dialog = new Blockly.ReplMgr.Dialog("Connection Failure", "We could not start the MIT AI Companion within the Emulator", giveupButton, keepgoingButton, 0, function(response) {
+            dialog.hide();
+            dialog = null;
+            if (response == giveupButton) {
+                if (progdialog) {
+                    progdialog.hide();
+                    progdialog = null;
+                }
+                top.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
+                top.ReplState.connection = null;
+                top.BlocklyPanel_indicateDisconnect();
+                context.resetYail();
+                context.hardreset(context.formName);
+            } else {
+                ubercounter = 0;
+                counter = 10;
+                pc = 2;
+                interval = setInterval(mainloop, 1000); // Need to restart mainloop(polling)
+            }
+        });
+    };
+
     // 0 == starting emulator
     // 1 == Counting down after emulator started
     // 2 == Counting down after repl start requested
     // 3 == Done (nothing to do), interval should be cleared
-    interval = setInterval(function() {
+    var mainloop = function() {
         var xhr;
         switch(pc) {
         case 0:
@@ -595,7 +707,8 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                     progdialog.setContent("Starting the Companion App in the emulator.");
                 }
                 pc = 2;
-                counter = 6;
+                counter = 10;
+                ubercounter = 0;
                 xhr = goog.net.XmlHttp();
                 xhr.open("GET", "http://localhost:8004/replstart/" + device, true); // Don't look at response
                 xhr.send();
@@ -604,10 +717,11 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
         case 2:
             counter -= 1;
             if (counter > 0) {
-                progdialog.setContent("Companion started, waiting " + counter + " seconds to ensure all is running.");
+                progdialog.setContent("Companion starting, waiting " + counter + " seconds to ensure all is running.");
             } else {
                 progdialog.setContent("Verifying that the Companion Started....");
                 xhr = goog.net.XmlHttp();
+                xhr.timeout = 4000; // 4 seconds
                 xhr.open("GET", rs.versionurl, true);
                 xhr.onreadystatechange = function() {
                     if (this.readyState == 4) {
@@ -615,9 +729,17 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                             pc = 4; // We got a response!
                             return;
                         } else {
-                            // We didn't work, add some time and go back to state 2
-                            counter = 5; // Wait 5 more seconds
-                            pc = 2;
+                            ubercounter += 1;
+                            if (ubercounter > ubergiveup) { // It's never going to work!
+                                timeout();
+                            } else {
+                                // We didn't work yet, kick it again and add some time and go back to state 2
+                                xhr = goog.net.XmlHttp();
+                                xhr.open("GET", "http://localhost:8004/replstart/" + device, true); // Don't look at response
+                                xhr.send();
+                                counter = 10; // Wait 10 more seconds
+                                pc = 2;
+                            }
                         }
                     }
                 };
@@ -630,11 +752,12 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                                 // we are waiting for the version check (noop) to finish
         case 4:
             progdialog.hide();
-            rs.state = blockly.rsState.CONNECTED; // Indicate that we are good to go!
+            rs.state = context.rsState.CONNECTED; // Indicate that we are good to go!
             clearInterval(interval);
-            window.parent.BlocklyPanel_blocklyWorkspaceChanged(blockly.formName);
+            window.parent.BlocklyPanel_blocklyWorkspaceChanged(context.formName);
         }
-    }, 1000);                   // We poll once per second
+    };
+    interval = setInterval(mainloop, 1000); // Once per second
 };
 
 // Convert non-ASCII Characters to kawa unicode escape
@@ -794,13 +917,13 @@ Blockly.ReplMgr.Dialog.prototype = {
     },
     'hide' : function() {
         if (this._dialog) {
-            window.parent.BlocklyPanel_hideDialog(this._dialog);
+            top.BlocklyPanel_hideDialog(this._dialog);
             this._dialog = null;
         }
     },
     'setContent' : function(message) {
         if (this._dialog) {
-            window.parent.BlocklyPanel_setDialogContent(this._dialog, message);
+            top.BlocklyPanel_setDialogContent(this._dialog, message);
         }
     }
 };
@@ -839,10 +962,10 @@ Blockly.ReplMgr.bytes_to_hexstring = function(input) {
     return z.join("");
 };
 
-Blockly.ReplMgr.putAsset = function(filename, blob) {
+Blockly.ReplMgr.putAsset = function(filename, blob, success, fail, force) {
     if (window.parent.ReplState === undefined)
         return false;
-    if (window.parent.ReplState.state != this.rsState.CONNECTED)
+    if (!force && (window.parent.ReplState.state != this.rsState.CONNECTED))
         return false;           // We didn't really do anything
     var conn = goog.net.XmlHttp();
     var rs = window.parent.ReplState;
@@ -850,6 +973,18 @@ Blockly.ReplMgr.putAsset = function(filename, blob) {
     var z = filename.split('/'); // Remove any directory components
     encoder.add('filename', z[z.length-1]);
     conn.open('PUT', rs.baseurl + '?' + encoder.toString(), true);
+    conn.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            if (success) {      // process callbacks
+                success();
+            }
+        } else if (this.readyState == 4) {
+            if (fail) {
+                fail();
+            }
+        }
+    };
+
     var arraybuf = new ArrayBuffer(blob.length);
     var arrayview = new Uint8Array(arraybuf);
     for (var i = 0; i < blob.length; i++) {
@@ -859,13 +994,38 @@ Blockly.ReplMgr.putAsset = function(filename, blob) {
     return true;
 };
 
-Blockly.ReplMgr.hardreset = function(formName) {
+Blockly.ReplMgr.hardreset = function(formName, callback) {
     window.parent.AssetManager_reset(formName); // Reset the notion of what assets
                                                 // are loaded.
     var xhr = goog.net.XmlHttp();
     xhr.open("GET", "http://localhost:8004/reset/", true);
-    xhr.onreadystatechange = function() {}; // Ignore errors
+    xhr.onreadystatechange = function() {
+        if (this.readyState == 4) {
+            if (callback) {     // Always call the callback
+                callback(this.status);
+            }
+        }
+    };
     xhr.send();
+};
+
+// ehardreset -- Reset connections and then tell aiStarter to
+// run the reset-emulator script. This will reset things to their
+// "factory" defaults.
+
+Blockly.ReplMgr.ehardreset = function(formName) {
+    var context = this;
+    var dialog = new Blockly.ReplMgr.Dialog("Do You Really?", 'This will attempt to reset your Emulator to its "factory" state. If you had previously updated the Companion installed in the Emulator, you will likely have to do this again.', "OK", "Cancel", 0, function(response) {
+        dialog.hide();
+        if (response == "OK") {
+            context.hardreset(formName, function() {
+                var xhr = goog.net.XmlHttp();
+                xhr.open("GET", "http://localhost:8004/emulatorreset/", true);
+                xhr.onreadystatchange = function() {}; // Ignore errors
+                xhr.send();
+            });
+        }
+    });
 };
 
 // Make a QRCode in an image tag. This is currently used by the

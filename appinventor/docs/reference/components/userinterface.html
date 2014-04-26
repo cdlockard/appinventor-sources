@@ -444,10 +444,12 @@
                     <li> <a href="#Image"> Image </a> </li>
                     <li> <a href="#Label"> Label </a> </li>
                     <li> <a href="#ListPicker"> ListPicker </a> </li>
+                    <li> <a href="#ListView"> ListView </a> </li>
                     <li> <a href="#Notifier"> Notifier </a> </li>
                     <li> <a href="#PasswordTextBox"> PasswordTextBox </a> </li>
                     <li> <a href="#Screen"> Screen </a> </li>
                     <li> <a href="#Slider"> Slider </a> </li>
+                    <li> <a href="#Spinner"> Spinner </a> </li>
                     <li> <a href="#TextBox"> TextBox </a> </li>
                     <li> <a href="#WebViewer"> WebViewer </a> </li>
                   </ul>
@@ -712,73 +714,115 @@
                     <dt> <code> Visible </code> </dt>
                     <dd> If set, label is visible. </dd>
                   </dl>
-                  <h2 id="ListPicker"> ListPicker </h2>
-                  <img src="images/listpicker.png" alt="" />
-                  <p> Users tap a list picker component to select one item from a list of text strings. </p>
-                  When a user taps a list picker, it displays a list of text items for the user to choose from. The text items can be specified through the Designer or Blocks Editor by setting the <code> ElementsFromString </code> property to their comma-separated concatenation (for example, <code> choice 1, choice 2, choice 3 </code> ) or by setting the <code> Elements </code> property to a <code> List </code> in the Blocks Editor.
-                  <p> Other properties, including <code> TextAlignment </code> and <code> BackgroundColor </code> , affect the appearance of the button and whether it can be tapped ( <code> Enabled </code> ). </p>
-                  <h3> Properties </h3>
-                  <dl>
-                    <dt> <code> Selection </code> </dt>
-                    <dd> Selected list element. </dd>
-                    <dt> <code> Items </code> </dt>
-                    <dd> Comma-separated list of items to display in component.  </dd>
-                    <dt> <code> ElementsFromString </code> </dt>
-                    <dd> (Description to come.) </dd>
-                    <dt> <code> BackgroundColor </code> </dt>
-                    <dd> Color for list picker background. </dd>
-                    <dt> <code> FontBold </code> </dt>
-                    <dd> If set, list picker text is displayed in bold. </dd>
-                    <dt> <code> FontItalic </code> </dt>
-                    <dd> If set, list picker text is displayed in italics. </dd>
-                    <dt> <code> FontSize </code> </dt>
-                    <dd> Point size for list picker text. </dd>
-                    <dt> <code> FontTypeface </code> </dt>
-                    <dd> Font family for list picker text. </dd>
-                    <dt> <code> Height </code> </dt>
-                    <dd> List picker height (y-size). </dd>
-                    <dt><code>Image</code></dt>
-                    <dd>Specifies the path of the button's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
-                    <dt><code>Selection</code></dt>
-                    <dd><p>The selected item.  When directly changed by the programmer, the SelectionIndex property is also changed to the first item in the ListPicker with the given value.  If the value does not appear, SelectionIndex will be set to 0.</p></dd>
-                    <dt><code>SelectionIndex</code></dt>
-                    <dd>The index of the currently selected item, starting at 1.  If no item is selected, the value will be 0.  If an attempt is made to set this to a number less than 1 or greater than the number of items in the ListPicker, SelectionIndex will be set to 0, and Selection will be set to the empty text.</dd>
-                    <dt><code>Shape</code> (designer only)</dt>
-                    <dd>Specifies the button's shape (default, rounded, rectangular, oval). The shape will not be visible if an Image is being displayed.</dd>
-                    <dt><code>ShowFeedback</code></dt>
-                    <dd>Specifies if a visual feedback should be shown  for a button that as an image as background.</dd>
-                    <dt><code>ShowFilterBar</code></dt>
-                    <dd>Returns current state of ShowFilterBar indicating if Search Filter Bar will be displayed on ListPicker or not</dd>
-                    <dt> <code> Text </code> </dt>
-                    <dd> Title text to display on list picker. </dd>
-                    <dt> <code> TextAlignment </code> </dt>
-                    <dd> Left, center, or right. </dd>
-                    <dt> <code> TextColor </code> </dt>
-                    <dd> Color for list picker text. </dd>
-                    <dt> <code> Visible </code> </dt>
-                    <dd> If set, list picker is visible. </dd>
-                    <dt> <code> Width </code> </dt>
-                    <dd> List picker width (x-size). </dd>
-                  </dl>
-                  <h3> Events </h3>
-                  <dl>
-                    <dt> <code> AfterPicking() </code> </dt>
-                    <dd> User selected an item from the list picker. </dd>
-                    <dt> <code> BeforePicking() </code> </dt>
-                    <dd> User has tapped the list picker but hasn't yet selected
-                      an item. </dd>
-                    <dt> <code> GotFocus() </code> </dt>
-                    <dd> List picker became the focused component. </dd>
-                    <dt> <code> LostFocus() </code> </dt>
-                    <dd> List picker is no longer the focused component. </dd>
-                  </dl>
 
-                 <h3>Methods</h3>
-                 <dl>
-                   <dt><code>Open()</code></dt>
-                   <dd>Opens the picker, as though the user clicked on it.</dd>
-                 </dl>
 
+
+<h2 id="ListPicker">ListPicker</h2>
+
+<p><p>A button that, when clicked on, displays a list of texts for the user to choose among. The texts can be specified through the Designer or Blocks Editor by setting the <code>ElementsFromString</code> property to their string-separated concatenation (for example, <em>choice 1, choice 2, choice 3</em>) or by setting the <code>Elements</code> property to a List in the Blocks editor.</p><p>Setting property ShowFilterBar to true, will make the list searchable.  Other properties affect the appearance of the button (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be clicked on (<code>Enabled</code>).</p></p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>BackgroundColor</code></dt>
+  <dd>Returns the button's background color</dd>
+  <dt><code>Elements</code></dt>
+  <dd>List of Choices to Display (as a list)</dd>
+  <dt><code>ElementsFromString</code></dt>
+  <dd>Comma separated list of choices to use</dd>
+  <dt><code>Enabled</code></dt>
+  <dd>Whether the ListPicker can be tapped</dd>
+  <dt><code>FontBold</code> (designer only)</dt>
+  <dd>If set, list picker text is displayed in bold. </dd>
+  <dt><code>FontItalic</code> (designer only)</dt>
+  <dd>If set, list picker text is displayed in italics. </dd>
+  <dt><code>FontSize</code> (designer only)</dt>
+  <dd>Point size for list picker text. </dd>
+  <dt><code>FontTypeface</code> (designer only)</dt>
+  <dd>Font family for list picker text. </dd>
+  <dt><code>Height</code></dt>
+  <dd>Box height (y-size). </dd>
+  <dt><code>Image</code></dt>
+  <dd>Specifies the path of the button's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
+  <dt><code>Selection</code></dt>
+  <dd>The selected item.  When directly changed by the programmer, the SelectionIndex property is also changed to the first item in the ListPicker with the given value.  If the value does not appear, SelectionIndex will be set to 0.</dd>
+  <dt><code>SelectionIndex</code></dt>
+  <dd>The index of the currently selected item, starting at 1.  If no item is selected, the value will be 0.  If an attempt is made to set this to a number less than 1 or greater than the number of items in the ListPicker, SelectionIndex will be set to 0, and Selection will be set to the empty text.</dd>
+  <dt><code>Shape</code> (designer only)</dt>
+  <dd>Specifies the button's shape (default, rounded, rectangular, oval). The shape will not be visible if an Image is being displayed.</dd>
+  <dt><code>ShowFeedback</code></dt>
+  <dd>Specifies if a visual feedback should be shown  for a button that as an image as background.</dd>
+  <dt><code>ShowFilterBar</code></dt>
+  <dd>Returns current state of ShowFilterBar indicating if Search Filter Bar will be displayed on ListPicker or not</dd>
+  <dt><code>Text</code></dt>
+  <dd>Title text to display on list picker.</dd>
+  <dt><code>TextAlignment</code> (designer only)</dt>
+  <dd>Left, center, or right. </dd>
+  <dt><code>TextColor</code></dt>
+  <dd>Color for text. </dd>
+  <dt><code>Title</code></dt>
+  <dd>Optional title displayed at the top of the list of choices.</dd>
+  <dt><code>Visible</code></dt>
+  <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+  <dt><code>Width</code></dt>
+  <dd>Box width (x-size). </dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AfterPicking()</code></dt>
+  <dd>Simple event to be raised after the picker activity returns its
+ result and the properties have been filled in.</dd>
+  <dt><code>BeforePicking()</code></dt>
+  <dd>Simple event to raise when the component is clicked but before the
+ picker activity is started.</dd>
+  <dt><code>GotFocus()</code></dt>
+  <dd>Indicates the cursor moved over the button so it is now possible
+ to click it.</dd>
+  <dt><code>LostFocus()</code></dt>
+  <dd>Indicates the cursor moved away from the button so it is now no
+ longer possible to click it.</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>Open()</code></dt>
+  <dd>Opens the picker, as though the user clicked on it.</dd>
+</dl>
+
+<h2 id="ListView">ListView</h2>
+
+<p><p>This is a visible component that allows to place a list of text elements in your Screen to display. <br> The list can be set using the ElementsFromString property or using the Elements block in the blocks editor. </p></p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>Elements</code></dt>
+  <dd>Set a list of text elements to build your list.</dd>
+  <dt><code>ElementsFromString</code></dt>
+  <dd>Build a list with a series of text elements separated by commas such as: Cheese,Fruit,Bacon,Radish. Each word before the comma will be an element in the list.</dd>
+  <dt><code>Height</code></dt>
+  <dd>Determines the height of the list on the view.</dd>
+  <dt><code><em>Selection</em></code></dt>
+  <dd>Returns the text last selected in the ListView.</dd>
+  <dt><code>SelectionIndex</code></dt>
+  <dd>Choose a position to be your index. This could be used to retrieve the text at the position chosen in the list.</dd>
+  <dt><code>ShowFilterBar</code></dt>
+  <dd>Sets visibility of ShowFilterBar. True will show the bar, Flase will hide it.</dd>
+  <dt><code>Visible</code></dt>
+  <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+  <dt><code>Width</code></dt>
+  <dd>Determines the width of the list on the view.</dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AfterPicking()</code></dt>
+  <dd>Simple event to be raised after the an element has been chosen in the list. The selected element is available in the Selection property.</dd>
+  <dt><code>BeforePicking()</code></dt>
+  <dd>Simple event to be raised right after an element has been chosen, but before assigning the element to the Selection property.</dd>
+</dl>
+
+<h3>Methods</h3>
+none
 
 <h2 id="Notifier">Notifier</h2>
 
@@ -956,6 +1000,42 @@ none
 </dl><h3 id="slidermethods">Methods</h3>
 <p>none</p>
 
+<h2 id="Spinner">Spinner</h2>
+
+<p><p>A spinner component that displays a pop-up with a list of elements. These elements can be set in the Designer or Blocks Editor by setting the<code>ElementsFromString</code> property to a string-separated concatenation (for example, <em>choice 1, choice 2, choice 3</em>) or by setting the <code>Elements</code> property to a List in the Blocks editor.</p></p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>Elements</code></dt>
+  <dd>returns a list of text elements to be picked from.</dd>
+  <dt><code>ElementsFromString</code></dt>
+  <dd>sets the Spinner list to the elements passed in the comma-separated string</dd>
+  <dt><code>Height</code></dt>
+  <dd></dd>
+  <dt><code>Prompt</code></dt>
+  <dd>Text with the current title for the Spinner window</dd>
+  <dt><code>Selection</code></dt>
+  <dd>Returns the current selected item in the spinner </dd>
+  <dt><code>SelectionIndex</code></dt>
+  <dd>The index of the currently selected item, starting at 1. If no item is selected, the value will be 0.</dd>
+  <dt><code>Visible</code></dt>
+  <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+  <dt><code>Width</code></dt>
+  <dd></dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AfterSelecting(text selection)</code></dt>
+  <dd>Event called after the user selects an item from the dropdown list.</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>DisplayDropdown()</code></dt>
+  <dd>displays the dropdown list for selection, same action as when the user clicks on the spinner.</dd>
+</dl>
+
                   <h2 id="TextBox"> TextBox </h2>
                   <img src="images/textbox.png" alt="" />
                   <p> Users enter text in a text box component. </p>
@@ -1125,7 +1205,12 @@ none
                       designer.</dd>
                     <dt> <code> Visible </code> </dt>
                     <dd> Whether the component is visible </dd>
-                    <dt> <code> Width </code> </dt>
+                    <dt><code>WebViewString</code></dt>
+                    <dd>Gets the WebView's String, which is viewable
+                      through Javascript in the WebView as the
+                      window.AppInventor object</dd>
+                    <dt><code>Width</code></dt>
+                    <dd></dd>
                   </dl>
                   <h3> Events </h3>
                   none
