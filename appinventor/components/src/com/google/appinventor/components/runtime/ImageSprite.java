@@ -306,6 +306,5 @@ public class ImageSprite extends Sprite {
       + " the image)", userVisible = false)
   public void Bounds(int bounds) {
     this.bounds = bounds;
-    // TODO: we actually need to act on this somehow :-)
   }
 }
