@@ -4,8 +4,6 @@
 // Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 package com.google.appinventor.components.common;
 
-import com.google.appinventor.components.runtime.ImageSprite;
-
 /**
  * Constants for specifying which
  * {@link com.google.appinventor.client.widgets.properties.PropertyEditor PropertyEditor}
