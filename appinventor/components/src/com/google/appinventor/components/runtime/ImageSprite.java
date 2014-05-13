@@ -69,6 +69,8 @@ public class ImageSprite extends Sprite {
   private double cachedRotationHeading;
   private boolean rotationCached;
 
+  private boolean[] containedPixelMap;
+
   /**
    * Constructor for ImageSprite.
    *
@@ -145,6 +147,23 @@ public class ImageSprite extends Sprite {
     }
   }
 
+  @Override
+  public boolean containsPoint(double qx, double qy) {
+    // return super.containsPoint(qx, qy);
+    boolean rectangularBoundsContainPoint = super.containsPoint(qx, qy);
+    if (this.Bounds() == Component.IMAGE_SPRITE_BOUNDS_VISIBLE_EDGES) {
+      if (rectangularBoundsContainPoint && containedPixelMap != null) {
+        int x = (int) (qx - xLeft);
+        int y = (int) (qy - yTop);
+        int width = unrotatedBitmap.getWidth();
+        return containedPixelMap[(x * width) + y];
+      }
+    }
+
+    // If this.Bounds() == Component.IMAGE_SPRITE_BOUNDS_RECTANGULAR_IMAGE, tben is same as calling
+    // super().
+    return rectangularBoundsContainPoint;
+  }
   /**
    * Returns the path of the sprite's picture
    *
@@ -180,8 +199,25 @@ public class ImageSprite extends Sprite {
     if (drawable != null) {
       // we'll need the bitmap for the drawable in order to rotate it
       unrotatedBitmap = drawable.getBitmap();
+
+      // Create the map of what pixels in the ImageSprite are transparent.
+      if (unrotatedBitmap.hasAlpha()) {
+        int bitmapWidth = unrotatedBitmap.getWidth();
+        int bitmapHeight = unrotatedBitmap.getHeight();
+        containedPixelMap = new boolean[bitmapWidth * bitmapHeight];
+        for (int x = 0; x < bitmapWidth; x++) {
+          for (int y = 0; y < bitmapHeight; y++) {
+            int argb = unrotatedBitmap.getPixel(x, y);
+            // assigns true if pixel is opaque, false if transparent
+            containedPixelMap[(x * bitmapHeight) + y] = (argb >>> 24) != 0;
+          }
+        }
+      } else {
+        containedPixelMap = null;
+      }
     } else {
       unrotatedBitmap = null;
+      containedPixelMap = null;
     }
     registerChange();
   }
