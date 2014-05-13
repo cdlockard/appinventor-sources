@@ -503,8 +503,8 @@ public class YaVersion {
   // - The TouchUp, TouchDown, and Flung events were added. (for all sprites)
   // For IMAGESPRITE_COMPONENT_VERSION 6:
   // - Callback parameters speed and heading were added to Flung. (for all sprites)
-  // Fore IMAGESPRITE_COMPONENT_VERSION 7:
-  // - The BOUNDS property was added.
+  // For IMAGESPRITE_COMPONENT_VERSION 7:
+  // - The Bounds property was added.
   public static final int IMAGESPRITE_COMPONENT_VERSION = 7;
 
   // For LABEL_COMPONENT_VERSION 2:
