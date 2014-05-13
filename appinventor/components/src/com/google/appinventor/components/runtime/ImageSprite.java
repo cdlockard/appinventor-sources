@@ -51,6 +51,8 @@ import com.google.appinventor.components.runtime.util.MediaUtil;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 public class ImageSprite extends Sprite {
+  private static final int DEFAULT_BOUNDS = Component.IMAGE_SPRITE_BOUNDS_VISIBLE_EDGES;
+
   private final Form form;
   private BitmapDrawable drawable;
   private int widthHint = LENGTH_PREFERRED;
@@ -82,7 +84,7 @@ public class ImageSprite extends Sprite {
     mat = new Matrix();
     rotates = true;
     rotationCached = false;
-    bounds = Component.IMAGE_SPRITE_BOUNDS_VISIBLE_EDGES;
+    Bounds(DEFAULT_BOUNDS);
   }
 
   @Override
