@@ -4,6 +4,8 @@
 // Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 package com.google.appinventor.components.common;
 
+import com.google.appinventor.components.runtime.ImageSprite;
+
 /**
  * Constants for specifying which
  * {@link com.google.appinventor.client.widgets.properties.PropertyEditor PropertyEditor}
@@ -178,4 +180,9 @@ public class PropertyTypeConstants {
    */
   public static final String PROPERTY_TYPE_TEXT_RECEIVING = "text_receiving";
 
+  /**
+   * Choices of how to define the bounds of an {@link ImageSprite}. {@link
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidImageSpriteBoundsPropertyEditor}.
+   */
+  public static final String PROPERTY_TYPE_IMAGE_SPRITE_BOUNDS = "image_sprite_bounds";
 }

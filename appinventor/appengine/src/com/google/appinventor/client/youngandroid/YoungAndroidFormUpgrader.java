@@ -6,6 +6,9 @@
 package com.google.appinventor.client.youngandroid;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import java.util.Map;
+
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockVisibleComponent;
 import com.google.appinventor.client.output.OdeLog;
@@ -15,8 +18,6 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.gwt.user.client.Window;
-
-import java.util.Map;
 
 /**
  * A class that can upgrade a Young Android Form source file.
@@ -751,6 +752,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 6) {
       // The callback parameters speed and heading were added to Flung.
       srcCompVersion = 6;
+    }
+    if (srcCompVersion < 7) {
+      // The Bounds property was added.
+      srcCompVersion = 7;
     }
     return srcCompVersion;
   }

@@ -5,6 +5,13 @@
 
 package com.google.appinventor.components.runtime;
 
+import java.io.IOException;
+
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -15,13 +22,6 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.MediaUtil;
-
-import android.graphics.Bitmap;
-import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
-import android.util.Log;
-
-import java.io.IOException;
 
 /**
  * Simple image-based Sprite.
@@ -57,6 +57,7 @@ public class ImageSprite extends Sprite {
   private int heightHint = LENGTH_PREFERRED;
   private String picturePath = "";  // Picture property
   private boolean rotates;
+  private int bounds; // Backing for how the bounds of this image sprite are defined.
 
   private Matrix mat;
 
@@ -79,8 +80,10 @@ public class ImageSprite extends Sprite {
     mat = new Matrix();
     rotates = true;
     rotationCached = false;
+    bounds = Component.IMAGE_SPRITE_BOUNDS_VISIBLE_EDGES;
   }
 
+  @Override
   public void onDraw(android.graphics.Canvas canvas) {
     if (unrotatedBitmap != null && visible) {
       int xinit = (int) Math.round(xLeft);
@@ -247,5 +250,26 @@ public class ImageSprite extends Sprite {
     public void Rotates(boolean rotates) {
     this.rotates = rotates;
     registerChange();
+  }
+
+  /**
+   * Returns how to define the bounds of this {@code ImageSprite}.
+   *
+   * @return one of {@link Component#IMAGE_SPRITE_BOUNDS_RECTANGULAR_IMAGE}, or
+   *         {@link Component#IMAGE_SPRITE_BOUNDS_VISIBLE_EDGES}
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public int Bounds() {
+    return bounds;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_IMAGE_SPRITE_BOUNDS,
+                    defaultValue = Component.IMAGE_SPRITE_BOUNDS_VISIBLE_EDGES + "")
+  @SimpleProperty(description = "Specifies how the bounds of the ImageSprite are defined (as the"
+      + " rectangular boundaries of the image or as the visible boundaries of the object(s) in"
+      + " the image)", userVisible = false)
+  public void Bounds(int bounds) {
+    this.bounds = bounds;
+    // TODO: we actually need to act on this somehow :-)
   }
 }
