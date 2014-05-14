@@ -1259,15 +1259,15 @@ public interface OdeMessages extends Messages {
   @Description("Hard Reset the Emulator.")
   String hardResetConnections();
 
-  // Used in editor/youngandroid/properties/YoungAndroidImageSpriteBoundsPropertyEditor.java
+  // Used in editor/youngandroid/properties/YoungAndroidImageSpriteBoundariesPropertyEditor.java
 
   @DefaultMessage("Rectangular Image")
-  @Description("Text for defining an image sprite's bounds as the rectangular sprite image")
-  String rectangularImageSpriteBounds();
+  @Description("Text for defining an image sprite's boundaries as the rectangular sprite image")
+  String rectangularImageSpriteBoundaries();
 
   @DefaultMessage("Visible Edges")
-  @Description("Text for defining an image sprite's bounds as the visible edges of the sprite")
-  String visibleImageSpriteBounds();
+  @Description("Text for defining an image sprite's boundaries as the visible edges of the sprite")
+  String visibleImageSpriteBoundaries();
 
   // This error message is displayed as HTML
   @DefaultMessage("App Inventor is unable to compile this project.  " +

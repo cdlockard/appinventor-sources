@@ -180,7 +180,7 @@ public class PropertyTypeConstants {
 
   /**
    * Choices of how to define the bounds of an {@link ImageSprite}. {@link
-   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidImageSpriteBoundsPropertyEditor}.
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidImageSpriteBoundariesPropertyEditor}.
    */
-  public static final String PROPERTY_TYPE_IMAGE_SPRITE_BOUNDS = "image_sprite_bounds";
+  public static final String PROPERTY_TYPE_IMAGE_SPRITE_BOUNDARIES = "image_sprite_boundaries";
 }

@@ -25,7 +25,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidComponentSelectorPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFontTypefaceChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidHorizontalAlignmentChoicePropertyEditor;
-import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidImageSpriteBoundsPropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidImageSpriteBoundariesPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLegoNxtSensorPortChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidScreenAnimationChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidScreenOrientationChoicePropertyEditor;
@@ -207,8 +207,8 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       return new YoungAndroidTextReceivingPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_ACCELEROMETER_SENSITIVITY)) {
       return new YoungAndroidAccelerometerSensitivityChoicePropertyEditor();
-    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_IMAGE_SPRITE_BOUNDS)) {
-      return new YoungAndroidImageSpriteBoundsPropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_IMAGE_SPRITE_BOUNDARIES)) {
+      return new YoungAndroidImageSpriteBoundariesPropertyEditor();
     } else {
       return new TextPropertyEditor();
     }

@@ -137,6 +137,6 @@ public interface Component {
   public static float SLIDER_THUMB_VALUE = (SLIDER_MIN_VALUE + SLIDER_MAX_VALUE) / 2.0f;
 
   // Definitions for ImageSprite boundaries.
-  static final int IMAGE_SPRITE_BOUNDS_RECTANGULAR_IMAGE = 0;
-  static final int IMAGE_SPRITE_BOUNDS_VISIBLE_EDGES = 1;
+  static final int IMAGE_SPRITE_BOUNDARIES_RECTANGULAR_IMAGE = 0;
+  static final int IMAGE_SPRITE_BOUNDARIES_VISIBLE_EDGES = 1;
 }

@@ -51,7 +51,7 @@ import com.google.appinventor.components.runtime.util.MediaUtil;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 public class ImageSprite extends Sprite {
-  private static final int DEFAULT_BOUNDS = Component.IMAGE_SPRITE_BOUNDS_RECTANGULAR_IMAGE;
+  private static final int DEFAULT_BOUNDS = Component.IMAGE_SPRITE_BOUNDARIES_RECTANGULAR_IMAGE;
 
   private final Form form;
   private BitmapDrawable drawable;
@@ -59,7 +59,7 @@ public class ImageSprite extends Sprite {
   private int heightHint = LENGTH_PREFERRED;
   private String picturePath = "";  // Picture property
   private boolean rotates;
-  private int bounds; // Backing for how the bounds of this image sprite are defined.
+  private int boundaries; // Backing for how the bounds of this image sprite are defined.
 
   private Matrix mat;
 
@@ -84,7 +84,7 @@ public class ImageSprite extends Sprite {
     mat = new Matrix();
     rotates = true;
     rotationCached = false;
-    Bounds(DEFAULT_BOUNDS);
+    Boundaries(DEFAULT_BOUNDS);
   }
 
   @Override
@@ -153,7 +153,7 @@ public class ImageSprite extends Sprite {
   public boolean containsPoint(double qx, double qy) {
     // return super.containsPoint(qx, qy);
     boolean rectangularBoundsContainPoint = super.containsPoint(qx, qy);
-    if (this.Bounds() == Component.IMAGE_SPRITE_BOUNDS_VISIBLE_EDGES) {
+    if (this.Boundaries() == Component.IMAGE_SPRITE_BOUNDARIES_VISIBLE_EDGES) {
       if (rectangularBoundsContainPoint && containedPixelMap != null) {
         int x = (int) (qx - xLeft);
         int y = (int) (qy - yTop);
@@ -291,22 +291,22 @@ public class ImageSprite extends Sprite {
   }
 
   /**
-   * Returns how to define the bounds of this {@code ImageSprite}.
+   * Returns how to define the boundaries of this {@code ImageSprite}.
    *
-   * @return one of {@link Component#IMAGE_SPRITE_BOUNDS_RECTANGULAR_IMAGE}, or
-   *         {@link Component#IMAGE_SPRITE_BOUNDS_VISIBLE_EDGES}
+   * @return one of {@link Component#IMAGE_SPRITE_BOUNDARIES_RECTANGULAR_IMAGE}, or
+   *         {@link Component#IMAGE_SPRITE_BOUNDARIES_VISIBLE_EDGES}
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
-  public int Bounds() {
-    return bounds;
+  public int Boundaries() {
+    return boundaries;
   }
 
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_IMAGE_SPRITE_BOUNDS,
-                    defaultValue = Component.IMAGE_SPRITE_BOUNDS_RECTANGULAR_IMAGE + "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_IMAGE_SPRITE_BOUNDARIES,
+                    defaultValue = Component.IMAGE_SPRITE_BOUNDARIES_RECTANGULAR_IMAGE + "")
   @SimpleProperty(description = "Specifies how the bounds of the ImageSprite are defined (as the"
       + " rectangular boundaries of the image or as the visible boundaries of the object(s) in"
       + " the image)", userVisible = false)
-  public void Bounds(int bounds) {
-    this.bounds = bounds;
+  public void Boundaries(int boundaries) {
+    this.boundaries = boundaries;
   }
 }
