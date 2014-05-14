@@ -51,7 +51,7 @@ import com.google.appinventor.components.runtime.util.MediaUtil;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 public class ImageSprite extends Sprite {
-  private static final int DEFAULT_BOUNDS = Component.IMAGE_SPRITE_BOUNDS_VISIBLE_EDGES;
+  private static final int DEFAULT_BOUNDS = Component.IMAGE_SPRITE_BOUNDS_RECTANGULAR_IMAGE;
 
   private final Form form;
   private BitmapDrawable drawable;
@@ -302,7 +302,7 @@ public class ImageSprite extends Sprite {
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_IMAGE_SPRITE_BOUNDS,
-                    defaultValue = Component.IMAGE_SPRITE_BOUNDS_VISIBLE_EDGES + "")
+                    defaultValue = Component.IMAGE_SPRITE_BOUNDS_RECTANGULAR_IMAGE + "")
   @SimpleProperty(description = "Specifies how the bounds of the ImageSprite are defined (as the"
       + " rectangular boundaries of the image or as the visible boundaries of the object(s) in"
       + " the image)", userVisible = false)
