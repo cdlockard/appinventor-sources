@@ -7,11 +7,6 @@ package com.google.appinventor.components.runtime;
 
 import java.io.IOException;
 
-import android.graphics.Bitmap;
-import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
-import android.util.Log;
-
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -22,6 +17,11 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.MediaUtil;
+
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
 
 /**
  * Simple image-based Sprite.
@@ -151,7 +151,6 @@ public class ImageSprite extends Sprite {
 
   @Override
   public boolean containsPoint(double qx, double qy) {
-    // return super.containsPoint(qx, qy);
     boolean rectangularBoundsContainPoint = super.containsPoint(qx, qy);
     if (this.Boundaries() == Component.IMAGE_SPRITE_BOUNDARIES_VISIBLE_EDGES) {
       if (rectangularBoundsContainPoint && containedPixelMap != null) {
@@ -204,16 +203,7 @@ public class ImageSprite extends Sprite {
 
       // Create the map of what pixels in the ImageSprite are transparent.
       if (unrotatedBitmap.hasAlpha()) {
-        int bitmapWidth = unrotatedBitmap.getWidth();
-        int bitmapHeight = unrotatedBitmap.getHeight();
-        containedPixelMap = new boolean[bitmapWidth * bitmapHeight];
-        for (int x = 0; x < bitmapWidth; x++) {
-          for (int y = 0; y < bitmapHeight; y++) {
-            int argb = unrotatedBitmap.getPixel(x, y);
-            // assigns true if pixel is opaque, false if transparent
-            containedPixelMap[(x * bitmapHeight) + y] = (argb >>> 24) != 0;
-          }
-        }
+    	  containedPixelMap = mapOpaquePixels(unrotatedBitmap);
       } else {
         containedPixelMap = null;
       }
@@ -222,6 +212,20 @@ public class ImageSprite extends Sprite {
       containedPixelMap = null;
     }
     registerChange();
+  }
+  
+  private boolean[] mapOpaquePixels(Bitmap imageBitmap){
+    int bitmapWidth = imageBitmap.getWidth();
+    int bitmapHeight = imageBitmap.getHeight();
+    boolean[] pixelMap = new boolean[bitmapWidth * bitmapHeight];
+    for (int x = 0; x < bitmapWidth; x++) {
+      for (int y = 0; y < bitmapHeight; y++) {
+        int argb = imageBitmap.getPixel(x, y);
+        // assigns true if pixel is opaque, false if transparent
+        pixelMap[(x * bitmapHeight) + y] = (argb >>> 24) != 0;
+      }
+    }	
+    return pixelMap;
   }
 
   // The actual width/height of an ImageSprite whose Width/Height property is set to Automatic or
@@ -291,7 +295,7 @@ public class ImageSprite extends Sprite {
   }
 
   /**
-   * Returns how to define the boundaries of this {@code ImageSprite}.
+   * Returns how to interpret the boundaries of this {@code ImageSprite}.
    *
    * @return one of {@link Component#IMAGE_SPRITE_BOUNDARIES_RECTANGULAR_IMAGE}, or
    *         {@link Component#IMAGE_SPRITE_BOUNDARIES_VISIBLE_EDGES}
@@ -305,7 +309,8 @@ public class ImageSprite extends Sprite {
                     defaultValue = Component.IMAGE_SPRITE_BOUNDARIES_RECTANGULAR_IMAGE + "")
   @SimpleProperty(description = "Specifies how the bounds of the ImageSprite are defined (as the"
       + " rectangular boundaries of the image or as the visible boundaries of the object(s) in"
-      + " the image)", userVisible = false)
+      + " the image) for use in detecting collisions with other ImageSprites and canvas edges", 
+      userVisible = false)
   public void Boundaries(int boundaries) {
     this.boundaries = boundaries;
   }
